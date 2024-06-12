@@ -1,0 +1,406 @@
+Q. Explain Internal working of HashMap.
+
+A hash map in Java, implemented as HashMap in the Java Collections Framework, is a widely used data structure that offers efficient storage and retrieval of key-value pairs. Here’s a detailed explanation of its internal structure and functioning, focusing on theoretical aspects without delving into the code:
+
+1. Hash Function
+In a Java HashMap, a hash function converts a key into an integer (hash code). This hash code is then used to determine the bucket location within the internal array where the key-value pair should be stored.
+
+Properties of a Good Hash Function:
+
+Deterministic: The same key consistently yields the same hash code.
+Efficient: Computes quickly.
+Uniform: Distributes keys evenly across the buckets.
+Minimizes Collisions: Different keys produce different hash codes.
+
+2. Buckets
+The HashMap uses an array of nodes (buckets) where each bucket can store multiple key-value pairs. The hash code determines which bucket an entry belongs to.
+
+Index Calculation: The hash code is used to calculate the bucket index using hash(key) & (n - 1), where n is the length of the array. This ensures the index is within the bounds of the array.
+
+3. Nodes
+Each entry in the HashMap is represented as a node containing:
+
+Key: The key object.
+Value: The value object associated with the key.
+Hash: The hash code of the key.
+Next: A reference to the next node in case of a collision (forming a linked list).
+
+4. Collision Resolution
+Collisions occur when multiple keys map to the same bucket. Java HashMap uses two main methods to resolve collisions:
+
+Chaining: Each bucket can contain a linked list of nodes. When a collision occurs, new nodes are added to the end of the list in the corresponding bucket.
+Treeification: When the number of nodes in a bucket exceeds a certain threshold (typically 8), the linked list is transformed into a balanced binary tree (red-black tree). This ensures O(log n) time complexity for operations within that bucket, enhancing performance for heavily populated buckets.
+
+5. Load Factor and Resizing
+The load factor measures how full the hash map can get before resizing. It's defined as number of entries / number of buckets. The default load factor in Java HashMap is 0.75.
+
+Threshold: When the number of entries exceeds the product of the load factor and the current bucket array size, the HashMap resizes.
+Resizing: Involves creating a new, larger array (typically double the size) and rehashing all existing entries into this new array. This operation helps maintain efficient performance.
+
+6. Rehashing
+Rehashing is the process of redistributing existing entries into a new array when the HashMap resizes. The steps include:
+
+Creating a new array of double the size.
+Recalculating the bucket index for each key using the new array size.
+Inserting each key-value pair into the appropriate bucket in the new array.
+
+7. Performance Considerations
+Time Complexity:
+Average Case: O(1) for insertions, deletions, and lookups due to direct indexing.
+Worst Case: O(n) if many collisions lead to long chains or large tree structures.
+Space Complexity: O(n), where n is the number of entries.
+
+8. Concurrency
+Java provides ConcurrentHashMap for concurrent access, which is thread-safe without the need for external synchronization. It achieves this by partitioning the map into multiple segments, each independently lockable, thus allowing multiple threads to access the map simultaneously without contention.
+
+9. Applications
+Hash maps are widely used in scenarios requiring quick access to data via keys, such as:
+
+Caching: Storing frequently accessed data for quick retrieval.
+Databases: Indexing for fast lookup.
+Sets: Implementing sets for fast membership testing.
+
+10. Advantages and Disadvantages
+Advantages:
+
+Fast average-case performance for lookup, insertion, and deletion.
+Simple to use and implement.
+Efficient memory usage for large data sets.
+
+Disadvantages:
+
+Potential for inefficient performance in worst-case scenarios.
+Requires a good hash function to minimize collisions.
+Rehashing can be computationally expensive.
+
+Q.Is HashMap thread-safe?
+
+No, HashMap is not thread-safe. If multiple threads access a HashMap concurrently and at least one of the threads modifies the map structurally, it must be synchronized externally.
+
+For thread-safe operations, you can use Collections.synchronizedMap to wrap the HashMap:
+
+Map<String, String> synchronizedMap = Collections.synchronizedMap(new HashMap<>());
+
+Alternatively, you can use ConcurrentHashMap, which is designed for concurrent access.
+
+ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+
+Q. Can you inherit private methods of a class?
+
+No, private methods of a class are not inherited by subclasses. Private methods are only accessible within the class they are declared in.
+
+Q. Can you override private methods?
+
+No, you cannot override private methods. Since private methods are not accessible to subclasses, they cannot be overridden. However, you can define a method with the same name and parameter list in the subclass, but it won't be considered an override; it's simply a new method.
+
+Q. Can you override member variables of a class?
+
+No, you cannot override member variables in Java. Member variables (fields) are hidden, not overridden. If you declare a variable in a subclass with the same name as one in the superclass, the subclass variable hides the superclass variable.
+
+Q. How to create a Singleton class?
+
+Creating a Singleton class in Java involves ensuring that a class has only one instance and provides a global point of access to it. Here’s how you can do it step-by-step:
+
+Step 1: Define the Class with a Private Constructor
+A private constructor prevents the class from being instantiated from outside the class.
+
+public class Singleton {
+    private static Singleton instance;
+    
+    private Singleton() {
+        // private constructor to prevent instantiation
+    }
+}
+
+Step 2: Create a Static Method to Provide the Singleton Instance
+This method checks if the instance already exists. If not, it creates one. This method ensures that only one instance of the class is created.
+
+public class Singleton {
+    private static Singleton instance;
+    
+    private Singleton() {
+        // private constructor to prevent instantiation
+    }
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+
+Thread-Safe Singleton (Optional)
+To make the Singleton class thread-safe, you can synchronize the getInstance method. This prevents multiple threads from creating separate instances of the Singleton class.
+
+
+public class Singleton {
+    private static Singleton instance;
+    
+    private Singleton() {
+        // private constructor to prevent instantiation
+    }
+
+    public static synchronized Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+
+Double-Checked Locking (Optimized Thread-Safe Singleton)
+Double-checked locking reduces the overhead of acquiring a lock by first checking the locking criterion without actually acquiring the lock. Only if the check indicates that locking is required does the actual lock get acquired.
+
+
+public class Singleton {
+    private static volatile Singleton instance;
+    
+    private Singleton() {
+        // private constructor to prevent instantiation
+    }
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+By following these steps, you can create a Singleton class in Java that ensures only one instance of the class is created and provides a global point of access to it.
+
+Q. How to do a shallow copy in Java
+Shallow copy can be done by using the clone() method, provided the class implements Cloneable and overrides the clone() method:
+
+public class ShallowCopyExample implements Cloneable {
+    int[] data;
+
+    public ShallowCopyExample(int[] data) {
+        this.data = data;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        int[] data = {1, 2, 3};
+        ShallowCopyExample original = new ShallowCopyExample(data);
+        ShallowCopyExample copy = (ShallowCopyExample) original.clone();
+
+        System.out.println(Arrays.toString(copy.data));  // Output: [1, 2, 3]
+    }
+}
+
+
+Q. What is the use of the Cloneable interface? Which class has the clone method? Why is the clone method in the Object class?
+
+Cloneable Interface: Indicates that a class permits cloning. If a class implements Cloneable, it must override the clone() method.
+Class with clone Method: The clone() method is defined in the Object class.
+Reason: Since Object is the root of the class hierarchy, having the clone() method in Object allows every object to be cloned, provided the class implements Cloneable.
+
+Q. Explain serialization and deserialization.
+
+Serialization: The process of converting an object into a byte stream for storage or transmission.
+Deserialization: The process of converting a byte stream back into a copy of the object.
+
+Q. What is dependency injection in Spring Boot? How to do dependency injection in code?
+
+Dependency Injection (DI) is a design pattern used in Spring Boot (and many other frameworks) to achieve Inversion of Control (IoC) between classes and their dependencies. It allows the creation of dependent objects outside of a class and provides those objects to a class in different ways. This makes your code more modular, testable, and maintainable.
+
+Understanding Dependency Injection
+Imagine you have a class Car that depends on another class Engine. Without DI, you might instantiate Engine inside the Car class like this:
+
+public class Car {
+    private Engine engine;
+
+    public Car() {
+        this.engine = new Engine();
+    }
+
+    // other methods...
+}
+
+
+This approach tightly couples Car to Engine, making it hard to change the implementation of Engine or to test Car with a mock Engine.
+
+With DI, you can inject the Engine dependency from outside the Car class:
+
+public class Car {
+    private Engine engine;
+
+    public Car(Engine engine) {
+        this.engine = engine;
+    }
+
+    // other methods...
+}
+
+
+Types of Dependency Injection in Spring Boot
+Constructor Injection: Dependencies are provided through the constructor.
+Setter Injection: Dependencies are provided through setter methods.
+Field Injection: Dependencies are injected directly into fields (not recommended for various reasons).
+
+How to Do Dependency Injection in Spring Boot
+
+You can inject dependencies using one of the below mentioned methods. Constructor Injection is the most recommended.
+
+Constructor Injection:
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Car {
+    private final Engine engine;
+
+    @Autowired
+    public Car(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is driving");
+    }
+}
+
+
+Setter Injection:
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Car {
+    private Engine engine;
+
+    @Autowired
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is driving");
+    }
+}
+
+
+Field Injection:
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Car {
+    @Autowired
+    private Engine engine;
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is driving");
+    }
+}
+
+
+Q. Explain @Autowired annotation.
+
+The @Autowired annotation in Spring is used for automatic dependency injection. It allows Spring to resolve and inject collaborating beans into your bean (class) without the need for explicit wiring. This simplifies the configuration and promotes loose coupling between components.
+
+When you use @Autowired, Spring's dependency injection mechanism will:
+
+Locate the Required Bean: It will search for a bean that matches the required type.
+Inject the Bean: It will inject the located bean into the annotated field, setter method, or constructor.
+
+Q. What is the difference between @RestController and @Service?
+
+In Spring, @RestController and @Service are annotations used to define different types of components with specific roles in an application. Understanding the differences between them helps in designing a well-structured and maintainable application.
+
+@RestController is a specialized version of the @Controller annotation.
+It is used to create RESTful web services.
+It combines @Controller and @ResponseBody, meaning that the methods in a @RestController return data directly rather than rendering a view.
+Primarily used for handling HTTP requests and returning responses (typically JSON or XML).
+
+@RestController
+@RequestMapping("/api")
+public class MyController {
+
+    @GetMapping("/greeting")
+    public String greeting() {
+        return "Hello, World!";
+    }
+}
+
+
+@Service is used to define a service layer component.
+It indicates that a class performs some business logic or service tasks.
+It doesn't handle HTTP requests directly; instead, it contains the business logic of the application.
+Typically used to encapsulate business logic, making it reusable and easier to test.
+
+@Service
+public class GreetingService {
+
+    public String getGreeting() {
+        return "Hello, World!";
+    }
+}
+
+Q. How to Create a Spring Bean?
+
+This article gave a brief description of Spring beans, first check this :- https://www.baeldung.com/spring-bean#:~:text=Bean%20is%20a%20key%20concept%20of,use%20it%20in%20an%20effective%20way.&text=Bean%20is%20a%20key,in%20an%20effective%20way.&text=a%20key%20concept%20of,use%20it%20in%20an
+
+Then next check this: https://www.geeksforgeeks.org/how-to-create-a-spring-bean-in-3-different-ways/
+
+Q.  What are microservices? Explain about Discovery Service?
+
+Microservices are an architectural style in which a large application is composed of small, independent services that communicate with each other through APIs. Each service is responsible for a specific business function and can be developed, deployed, and scaled independently. This approach contrasts with monolithic architecture, where an application is built as a single, interconnected unit.
+
+Key Characteristics of Microservices:
+
+Independence: Each microservice can be developed, deployed, and scaled independently.
+Business Capability: Each service is built around a specific business function.
+Decentralized Data Management: Each microservice manages its own database, which helps in ensuring loose coupling.
+Technology Diversity: Different services can be built using different programming languages and technologies, allowing teams to choose the best tools for their tasks.
+Fault Isolation: Failures in one service do not necessarily bring down the entire system.
+Scalability: Services can be scaled independently based on their specific demand.
+
+
+Example of Microservices Architecture
+
+Consider an e-commerce application divided into several microservices:
+
+User Service: Manages user accounts and authentication.
+Product Service: Manages the product catalog.
+Order Service: Handles order processing and management.
+Inventory Service: Manages inventory and stock levels.
+Payment Service: Processes payments and transactions.
+
+Each of these services can be developed, deployed, and scaled independently, enabling more flexible and efficient management of the application.
+
+
+In a microservices architecture, services need to locate and communicate with each other. A Discovery Service facilitates this by maintaining a registry of all the available microservices and their locations (such as URLs or IP addresses). It allows services to discover each other dynamically at runtime.
+
+Key Functions of a Discovery Service:
+
+Registration: Microservices register themselves with the Discovery Service upon startup, providing their current location and other metadata.
+Lookup: When a microservice needs to communicate with another service, it queries the Discovery Service to get the location of the target service.
+Health Monitoring: Discovery Services often monitor the health of registered services, ensuring they are available and updating the registry as necessary.
+Load Balancing: It can distribute traffic among multiple instances of a service to ensure even load distribution.
+
+Example of Discovery Service
+Netflix Eureka: One of the most popular Discovery Services, commonly used with Spring Cloud.
+
+
+
+
+
+
+
