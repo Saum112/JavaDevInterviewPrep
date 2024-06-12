@@ -1,6 +1,6 @@
 Q. Explain Internal working of HashMap.
 
-A hash map in Java, implemented as HashMap in the Java Collections Framework, is a widely used data structure that offers efficient storage and retrieval of key-value pairs. Here’s a detailed explanation of its internal structure and functioning, focusing on theoretical aspects without delving into the code:
+A hash map in Java, implemented as HashMap in the Java Collections Framework, is a widely used data structure that offers efficient storage and retrieval of key-value pairs. Here’s a detailed explanation of its internal structure.
 
 1. Hash Function
 In a Java HashMap, a hash function converts a key into an integer (hash code). This hash code is then used to determine the bucket location within the internal array where the key-value pair should be stored.
