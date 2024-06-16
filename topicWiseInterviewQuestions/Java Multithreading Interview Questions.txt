@@ -1,0 +1,295 @@
+1. What is the difference between Process and Thread?
+
+Process:
+
+A process is an independent program in execution with its own memory space.
+Processes are isolated from each other and do not share memory.
+Creating a process is resource-intensive due to its high memory usage and startup time.
+Communication between processes usually requires inter-process communication (IPC) mechanisms like sockets or shared files.
+
+Thread:
+
+A thread (or lightweight process) is a smaller unit of a process that can run concurrently with other threads within the same process.
+Threads share the same memory space and resources of their parent process.
+Creating a thread is less resource-intensive compared to creating a process.
+Threads can directly communicate with each other by reading and writing to shared variables.
+
+2. What is the difference between user Thread and daemon Thread?
+
+User Thread:
+
+User threads are high-priority threads that perform the main tasks of an application.
+The JVM waits for user threads to complete before terminating the program.
+They are non-daemon by default.
+
+Daemon Thread:
+
+Daemon threads are low-priority threads that run in the background to perform housekeeping tasks.
+The JVM does not wait for daemon threads to finish before exiting the program.
+Examples include garbage collector and other background tasks.
+
+
+3. How can we create a Thread in Java?
+
+By extending Thread class:
+
+public class MyThread extends Thread {
+    public void run() {
+        // Code to execute in the thread
+    }
+}
+
+MyThread thread = new MyThread();
+thread.start();
+
+
+By implementing Runnable interface:
+
+public class MyRunnable implements Runnable {
+    public void run() {
+        // Code to execute in the thread
+    }
+}
+
+Thread thread = new Thread(new MyRunnable());
+thread.start();
+
+
+4. What are different states in lifecycle of Thread?
+
+New: The thread is created but not yet started.
+Runnable: The thread is ready to run and waiting for CPU time.
+Blocked: The thread is blocked waiting for a monitor lock.
+Waiting: The thread is waiting indefinitely for another thread to perform a specific action.
+Timed Waiting: The thread is waiting for another thread to perform a specific action for a specified period.
+Terminated: The thread has finished its execution.
+
+5. Can we call run() method of a Thread class?
+
+Yes, you can call the run() method directly, but it will be executed in the current thread like a normal method call and won't create a new thread. To start a new thread, you must call the start() method, which in turn calls the run() method internally.
+
+6. How can we pause the execution of a Thread for specific time?
+
+You can use the sleep() method from the Thread class.
+
+try {
+    Thread.sleep(1000); // Pauses the thread for 1 second
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+
+
+7. What do you understand about Thread Priority?
+
+Thread priority determines the relative priority of threads for CPU time allocation. It is an integer value between Thread.MIN_PRIORITY (1) and Thread.MAX_PRIORITY (10), with the default being Thread.NORM_PRIORITY (5). However, thread priority doesn't guarantee the execution order due to OS thread scheduling.
+
+8. What is context-switching in multi-threading?
+
+Context-switching is the process of saving the state of a currently running thread or process and restoring the state of the next thread or process to be executed by the CPU. This enables multiple threads to share a single CPU resource effectively.
+
+9. How can we make sure main() is the last thread to finish in Java Program?
+
+You can use the join() method to ensure that the main thread waits for other threads to complete.
+
+Thread t1 = new Thread(new RunnableTask());
+Thread t2 = new Thread(new RunnableTask());
+
+t1.start();
+t2.start();
+
+try {
+    t1.join();
+    t2.join();
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+
+
+
+Certainly! Below are explanations for all the questions listed, covering various aspects of threads in Java.
+
+1. What is the difference between Process and Thread?
+Process:
+
+A process is an independent program in execution with its own memory space.
+Processes are isolated from each other and do not share memory.
+Creating a process is resource-intensive due to its high memory usage and startup time.
+Communication between processes usually requires inter-process communication (IPC) mechanisms like sockets or shared files.
+Thread:
+
+A thread (or lightweight process) is a smaller unit of a process that can run concurrently with other threads within the same process.
+Threads share the same memory space and resources of their parent process.
+Creating a thread is less resource-intensive compared to creating a process.
+Threads can directly communicate with each other by reading and writing to shared variables.
+2. What is the difference between user Thread and daemon Thread?
+User Thread:
+
+User threads are high-priority threads that perform the main tasks of an application.
+The JVM waits for user threads to complete before terminating the program.
+They are non-daemon by default.
+Daemon Thread:
+
+Daemon threads are low-priority threads that run in the background to perform housekeeping tasks.
+The JVM does not wait for daemon threads to finish before exiting the program.
+Examples include garbage collector and other background tasks.
+3. How can we create a Thread in Java?
+By extending Thread class:
+
+java
+Copy code
+public class MyThread extends Thread {
+    public void run() {
+        // Code to execute in the thread
+    }
+}
+
+MyThread thread = new MyThread();
+thread.start();
+By implementing Runnable interface:
+
+java
+Copy code
+public class MyRunnable implements Runnable {
+    public void run() {
+        // Code to execute in the thread
+    }
+}
+
+Thread thread = new Thread(new MyRunnable());
+thread.start();
+4. What are different states in lifecycle of Thread?
+New: The thread is created but not yet started.
+Runnable: The thread is ready to run and waiting for CPU time.
+Blocked: The thread is blocked waiting for a monitor lock.
+Waiting: The thread is waiting indefinitely for another thread to perform a specific action.
+Timed Waiting: The thread is waiting for another thread to perform a specific action for a specified period.
+Terminated: The thread has finished its execution.
+5. Can we call run() method of a Thread class?
+Yes, you can call the run() method directly, but it will be executed in the current thread like a normal method call and won't create a new thread. To start a new thread, you must call the start() method, which in turn calls the run() method internally.
+
+6. How can we pause the execution of a Thread for specific time?
+You can use the sleep() method from the Thread class.
+
+java
+Copy code
+try {
+    Thread.sleep(1000); // Pauses the thread for 1 second
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+7. What do you understand about Thread Priority?
+Thread priority determines the relative priority of threads for CPU time allocation. It is an integer value between Thread.MIN_PRIORITY (1) and Thread.MAX_PRIORITY (10), with the default being Thread.NORM_PRIORITY (5). However, thread priority doesn't guarantee the execution order due to OS thread scheduling.
+
+8. What is context-switching in multi-threading?
+Context-switching is the process of saving the state of a currently running thread or process and restoring the state of the next thread or process to be executed by the CPU. This enables multiple threads to share a single CPU resource effectively.
+
+9. How can we make sure main() is the last thread to finish in Java Program?
+You can use the join() method to ensure that the main thread waits for other threads to complete.
+
+java
+Copy code
+Thread t1 = new Thread(new RunnableTask());
+Thread t2 = new Thread(new RunnableTask());
+
+t1.start();
+t2.start();
+
+try {
+    t1.join();
+    t2.join();
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+
+10. How does thread communicate with each other?
+
+Threads communicate with each other using shared variables. They can also use synchronization constructs such as wait(), notify(), and notifyAll() to coordinate their actions.
+
+11. Why thread communication methods wait(), notify() and notifyAll() are in Object class?
+
+In Java every Object has a monitor and wait, notify methods are used to wait for the Object monitor or to notify other threads that Object monitor is free now. There is no monitor on threads in java and synchronization can be used with any Object, that's why it's part of Object class so that every class in java has these essential methods for inter thread communication.
+
+12. Why wait(), notify() and notifyAll() methods have to be called from synchronized method or block?
+
+These methods need to be called from synchronized context to ensure that the current thread holds the object's monitor lock. This is necessary to avoid race conditions and to ensure that thread communication happens correctly and safely.
+
+13. Why Thread sleep() and yield() methods are static?
+
+The sleep() and yield() methods are static because they always affect the current thread, the one that is executing the method. It doesn't make sense to call these methods on other threads.
+
+14. How can we achieve thread safety in Java?
+
+Thread safety can be achieved using various techniques:
+
+Synchronization: Using synchronized methods or blocks.
+Locks: Using Lock and ReentrantLock from java.util.concurrent.locks.
+Volatile keyword: For visibility of changes to variables across threads.
+Thread-safe collections: Using classes from java.util.concurrent.
+Atomic variables: Using java.util.concurrent.atomic package.
+
+15. What is volatile keyword in Java?
+
+The volatile keyword in Java is used to indicate that a variable's value will be modified by different threads. It ensures that the value of the volatile variable is always read from the main memory, and not from the thread's local cache.
+
+16. Which is more preferred - Synchronized method or Synchronized block?
+
+Synchronized blocks are more preferred as they provide more granular control over the synchronization scope. They allow locking of only the critical section of the code, potentially improving performance by reducing the scope of the lock.
+
+17. How to create daemon thread in Java?
+
+You can create a daemon thread by calling setDaemon(true) on a Thread object before starting it.
+
+Thread daemonThread = new Thread(new RunnableTask());
+daemonThread.setDaemon(true);
+daemonThread.start();
+
+18. What is Thread Group? Why it’s advised not to use it?
+
+ThreadGroup is a class which was intended to provide information about a thread group. ThreadGroup API is weak and it doesn't have any functionality that is not provided by Thread. It has two main features - to get the list of active threads in a thread group and to set the uncaught exception handler for the thread. But Java 1.5 has added _setUncaughtExceptionHandler(UncaughtExceptionHandler eh)_ method using which we can add uncaught exception handler to the thread. So ThreadGroup is obsolete and hence not advised to use anymore.
+
+```
+t1.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+
+@Override
+public void uncaughtException(Thread t, Throwable e) {
+    System.out.println("exception occured:"+e.getMessage());
+}
+            
+});
+```
+
+19. What is Deadlock? How to analyze and avoid deadlock situation?
+
+Deadlock: A situation where two or more threads are blocked forever, waiting for each other to release resources.
+Analysis: Deadlocks can be analyzed using thread dumps, which show the stack trace of all threads and the locks they are holding.
+Avoidance: Deadlocks can be avoided by:
+Avoiding nested locks.
+Using a consistent order for acquiring locks.
+Using try-lock mechanisms with timeouts.
+
+20. What is Java Timer Class? How to schedule a task to run after specific interval?
+
+Timer is a utility class in Java used to schedule tasks for future execution in a background thread.
+
+Timer timer = new Timer();
+timer.schedule(new TimerTask() {
+    @Override
+    public void run() {
+        // Task to run
+    }
+}, 5000); // Schedules task to run after 5 seconds
+
+
+21. What is Thread Pool? How can we create Thread Pool in Java?
+
+A thread pool is a collection of pre-created threads that can be reused to execute tasks, improving performance and resource management.
+
+ExecutorService executor = Executors.newFixedThreadPool(10);
+executor.execute(new RunnableTask());
+executor.shutdown();
+
+
+22. What will happen if we don’t override Thread class run() method?
+
+If you don't override the run() method, the Thread class's run() method will execute, which does nothing. This means the thread will start but will not perform any meaningful task.
+
