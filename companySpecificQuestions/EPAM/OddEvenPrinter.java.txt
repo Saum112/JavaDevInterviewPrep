@@ -1,0 +1,64 @@
+package com.card;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class OddEvenPrinter {
+	private final Object lock = new Object();
+	private int current = 1;
+	private final int max = 10;
+
+	public static void main(String[] args) {
+		OddEvenPrinter printer = new OddEvenPrinter();
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+
+		executor.submit(printer.new OddNumberPrinter());
+		executor.submit(printer.new EvenNumberPrinter());
+
+		executor.shutdown();
+	}
+
+	class OddNumberPrinter implements Runnable {
+		@Override
+		public void run() {
+			synchronized (lock) {
+				while (current <= max) {
+					if (current % 2 != 0) {
+						System.out.println("Odd: " + current);
+						current++;
+						lock.notify();
+					} else {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					}
+				}
+				lock.notify(); 
+			}
+		}
+	}
+
+	class EvenNumberPrinter implements Runnable {
+		@Override
+		public void run() {
+			synchronized (lock) {
+				while (current <= max) {
+					if (current % 2 == 0) {
+						System.out.println("Even: " + current);
+						current++;
+						lock.notify();
+					} else {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					}
+				}
+				lock.notify(); 
+			}
+		}
+	}
+}
