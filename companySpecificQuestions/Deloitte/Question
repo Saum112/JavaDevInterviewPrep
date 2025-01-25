@@ -1,0 +1,64 @@
+// Asked in JP Morgan Java Developer Interview Question
+// How can you synchronize two threads to alternately print numbers (1,2,3...) and letters (A,B,C...) to produce the sequence "1,A,2,B..."?
+
+class AlternatingPrinter {
+    private final Object lock = new Object();
+    private volatile boolean numberTurn = true;
+
+    public static void main(String[] args) {
+        AlternatingPrinter printer = new AlternatingPrinter();
+        Thread numberThread = new Thread(printer::printNumbers, "NumberThread");
+        Thread letterThread = new Thread(printer::printLetters, "LetterThread");
+
+        numberThread.start();
+        letterThread.start();
+
+        try {
+            numberThread.join();
+            letterThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Main thread interrupted: " + e.getMessage());
+        }
+    }
+
+    public void printNumbers() {
+        for (int i = 1; i <= 26; i++) {
+            synchronized (lock) {
+                try {
+                    while (!numberTurn) {
+                        lock.wait();
+                    }
+                    System.out.print(i + " ");
+                    numberTurn = false;
+                    lock.notifyAll();
+                    Thread.sleep(100); // Optional: adds small delay for better readability
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Number thread interrupted: " + e.getMessage());
+                    return;
+                }
+            }
+        }
+    }
+
+    public void printLetters() {
+        for (char c = 'A'; c <= 'Z'; c++) {
+            synchronized (lock) {
+                try {
+                    while (numberTurn) {
+                        lock.wait();
+                    }
+                    System.out.print(c + " ");
+                    numberTurn = true;
+                    lock.notifyAll();
+                    Thread.sleep(100); // Optional: adds small delay for better readability
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Letter thread interrupted: " + e.getMessage());
+                    return;
+                }
+            }
+        }
+    }
+}
