@@ -1,0 +1,86 @@
+
+//Asked in walmart
+
+/*
+ * Write a Multithreading problem which creates 3 threads (T1, T2, T3) and every thread should run in such a sequential 
+ * manner that the output is like: T1:1 T2:2 T3:3 …..T1:10
+ */
+
+package streams;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SequentialThreads {
+
+	private static final ReentrantLock lock = new ReentrantLock();
+
+	private static final Condition[] conditions = new Condition[3];
+
+	private static int nextThread = 1;
+
+	private static final int MAX_COUNT = 10;
+	private static int count = 1;
+
+	public static void main(String[] args) {
+
+		for (int i = 0; i < 3; i++) {
+
+			conditions[i] = lock.newCondition();
+		}
+
+		Thread t1 = new Thread(() -> runTask(1), "Therad T1");
+		Thread t2 = new Thread(() -> runTask(2), "Therad T2");
+		Thread t3 = new Thread(() -> runTask(3), "Therad T3");
+
+		t1.start();
+		t2.start();
+		t3.start();
+
+	}
+
+	private static void runTask(int threadId) {
+
+		while (true) {
+
+			lock.lock();
+			try {
+
+				if (count > MAX_COUNT)
+					break;
+
+				while (nextThread != threadId) {
+
+					try {
+
+						conditions[threadId - 1].await();
+
+					}
+
+					catch (InterruptedException e) {
+
+						Thread.currentThread().interrupt();
+						return;
+					}
+
+					if (count > MAX_COUNT)
+						return;
+
+				}
+
+				System.out.println("T" + threadId + ":" + count++);
+				nextThread = (threadId % 3) + 1;
+				conditions[nextThread - 1].signal();
+
+			}
+
+			finally {
+
+				lock.unlock();
+			}
+
+		}
+
+	}
+
+}
